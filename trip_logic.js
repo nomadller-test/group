@@ -25,9 +25,10 @@ const SUPABASE_URL = 'https://wgdyfxndajymkuiepqrl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndnZHlmeG5kYWp5bWt1aWVwcXJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNDcwNjgsImV4cCI6MjA4NTcyMzA2OH0.V10YJw5wAOZLY4RsVDENcG-FgDDaWf5recCE4FUwysk';
 
 // Initialize Client (if library is loaded)
-let supabase;
-if (typeof createClient !== 'undefined') {
-    supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+let db;
+if (window.supabase && window.supabase.createClient) {
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    window.db = db; // Expose for Realtime subscripts
 }
 
 // Content Management Class (Async Version)
@@ -38,9 +39,9 @@ class TripManager {
 
     // Fetch all events from Supabase
     async fetchEvents() {
-        if (!supabase) return [];
+        if (!db) return [];
 
-        const { data, error } = await supabase
+        const { data, error } = await db
             .from('trip_events')
             .select('*')
             .order('sort_order', { ascending: true });
@@ -70,7 +71,7 @@ class TripManager {
             });
         }
 
-        const { error } = await supabase
+        const { error } = await db
             .from('trip_events')
             .update(updates)
             .eq('id', id);
@@ -81,7 +82,7 @@ class TripManager {
 
     // Update time manual
     async updateTime(id, newTime) {
-        const { error } = await supabase
+        const { error } = await db
             .from('trip_events')
             .update({ time: newTime })
             .eq('id', id);
@@ -95,7 +96,7 @@ class TripManager {
         const event = this.events.find(e => e.id === id);
         if (!event) return false;
 
-        const { error } = await supabase
+        const { error } = await db
             .from('trip_events')
             .update({ head_count_verified: !event.head_count_verified })
             .eq('id', id);
@@ -110,7 +111,7 @@ class TripManager {
         // Here we'll just update all to 'pending' and clear custom times?
         // For simplicity, let's just update all status to pending.
 
-        const { error } = await supabase
+        const { error } = await db
             .from('trip_events')
             .update({
                 status: 'pending',

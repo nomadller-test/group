@@ -389,8 +389,8 @@
         renderTimeline();
 
         // Auto-refresh via Realtime
-        if (typeof supabase !== 'undefined') {
-            supabase
+        if (typeof window.db !== 'undefined' && window.db) {
+            window.db
                 .channel('public-db-changes')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_events' }, payload => {
                     renderTimeline();

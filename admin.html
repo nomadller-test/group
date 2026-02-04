@@ -174,23 +174,23 @@
         async function renderAdmin() {
             const list = document.getElementById('admin-list');
             list.innerHTML = '<p style="text-align:center; color:#888;">Fetching live data...</p>';
-            
+
             const events = await manager.fetchEvents();
             list.innerHTML = ''; // Clear loader
-            
+
             if (events.length === 0) {
-                 list.innerHTML = '<p style="text-align:center; color:red;">No data found. Please run db_schema.sql in Supabase.</p>';
-                 return;
+                list.innerHTML = '<p style="text-align:center; color:red;">No data found. Please run db_schema.sql in Supabase.</p>';
+                return;
             }
-            
+
             events.forEach(event => {
                 const card = document.createElement('div');
                 card.className = 'admin-card';
                 card.style.borderLeft = event.status === 'active' ? '5px solid #00d2ff' : (event.status === 'completed' ? '5px solid #00ff88' : '5px solid #ddd');
-                
+
                 // Note: Snake_case from Supabase (count_check etc) vs CamelCase in JS
                 // We accessed table directly so columns are snake_case: count_check, head_count_verified
-                
+
                 card.innerHTML = `
                     <div class="event-info">
                         <h3>${event.icon} ${event.title} <span class="status-badge status-${event.status}">${event.status}</span></h3>
@@ -226,7 +226,7 @@
                         </div>
                     </div>
                 `;
-                
+
                 list.appendChild(card);
             });
         }
@@ -254,10 +254,10 @@
 
         // Init
         renderAdmin();
-        
+
         // Setup Realtime (Auto-Refresh)
-        if (typeof supabase !== 'undefined') {
-            supabase
+        if (typeof window.db !== 'undefined') {
+            window.db
                 .channel('admin-db-changes')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_events' }, payload => {
                     console.log('Change received!', payload);
