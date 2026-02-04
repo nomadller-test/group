@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #f0f2f5;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .admin-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .event-info h3 {
+            margin: 0 0 5px 0;
+        }
+
+        .event-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-pending {
+            background: #e0e0e0;
+            color: #555;
+        }
+
+        .btn-active {
+            background: #00d2ff;
+            color: white;
+        }
+
+        .btn-completed {
+            background: #00ff88;
+            color: #004400;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .btn-verified {
+            background: #00aa66;
+            color: white;
+            border: 1px solid #00aa66;
+        }
+
+        .btn-unverified {
+            background: #ffcc00;
+            color: #333;
+            border: 1px solid #eebb00;
+        }
+
+        /* Time Input */
+        .time-input {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: bold;
+            width: 120px;
+            margin-top: 5px;
+        }
+
+        /* Active selection styling */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #eee;
+            color: #999;
+        }
+
+        .status-active {
+            background: #e6faff;
+            color: #00d2ff;
+            border: 1px solid #00d2ff;
+        }
+
+        .status-completed {
+            background: #e6fffa;
+            color: #00aa66;
+            border: 1px solid #00ff88;
+        }
+
+        .reset-section {
+            margin-top: 50px;
+            text-align: center;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+
+        .btn-danger {
+            background: #ff4444;
+            color: white;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .view-link {
+            text-decoration: none;
+            color: #00d2ff;
+            font-weight: bold;
+            border: 2px solid #00d2ff;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar">
+        <h1>Trip Control Room 🛠️</h1>
+        <a href="timeline.html" target="_blank" class="view-link">Open Public View ↗</a>
+    </div>
+
+    <div id="admin-list"></div>
+
+    <div class="reset-section">
+        <button class="btn-danger" onclick="resetAll()">⚠️ Reset Entire Trip Status</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="trip_logic.js"></script>
+    <script>
+        const manager = window.tripManager;
+
+        async function renderAdmin() {
+            const list = document.getElementById('admin-list');
+            list.innerHTML = '<p style="text-align:center; color:#888;">Fetching live data...</p>';
+            
+            const events = await manager.fetchEvents();
+            list.innerHTML = ''; // Clear loader
+            
+            if (events.length === 0) {
+                 list.innerHTML = '<p style="text-align:center; color:red;">No data found. Please run db_schema.sql in Supabase.</p>';
+                 return;
+            }
+            
+            events.forEach(event => {
+                const card = document.createElement('div');
+                card.className = 'admin-card';
+                card.style.borderLeft = event.status === 'active' ? '5px solid #00d2ff' : (event.status === 'completed' ? '5px solid #00ff88' : '5px solid #ddd');
+                
+                // Note: Snake_case from Supabase (count_check etc) vs CamelCase in JS
+                // We accessed table directly so columns are snake_case: count_check, head_count_verified
+                
+                card.innerHTML = `
+                    <div class="event-info">
+                        <h3>${event.icon} ${event.title} <span class="status-badge status-${event.status}">${event.status}</span></h3>
+                        
+                        <input type="text" 
+                               class="time-input" 
+                               value="${event.time || ''}" 
+                               onchange="updateTime('${event.id}', this.value)"
+                               placeholder="Enter Time">
+                    </div>
+                    
+                    <div class="controls-group" style="display:flex; flex-direction:column; gap:10px; align-items:flex-end;">
+                        <!-- Head Count Button -->
+                        ${event.count_check ? `
+                            <button class="${event.head_count_verified ? 'btn-verified' : 'btn-unverified'}" 
+                                    onclick="toggleCount('${event.id}')">
+                                ${event.head_count_verified ? '✓ Count Verified' : '⚠ Verify Count'}
+                            </button>
+                        ` : ''}
+
+                        <div class="controls">
+                            <button class="${event.status === 'pending' ? 'btn-pending' : 'btn-pending'}" 
+                                    style="opacity: ${event.status === 'pending' ? '1' : '0.3'}"
+                                    onclick="setStatus('${event.id}', 'pending')">Pending</button>
+                                    
+                            <button class="${event.status === 'active' ? 'btn-active' : 'btn-active'}"
+                                    style="opacity: ${event.status === 'active' ? '1' : '0.3'}"
+                                    onclick="setStatus('${event.id}', 'active')">Active</button>
+                                    
+                            <button class="${event.status === 'completed' ? 'btn-completed' : 'btn-completed'}"
+                                    style="opacity: ${event.status === 'completed' ? '1' : '0.3'}"
+                                    onclick="setStatus('${event.id}', 'completed')">Done</button>
+                        </div>
+                    </div>
+                `;
+                
+                list.appendChild(card);
+            });
+        }
+
+        async function setStatus(id, status) {
+            await manager.updateStatus(id, status);
+            renderAdmin();
+        }
+
+        async function updateTime(id, newTime) {
+            await manager.updateTime(id, newTime);
+        }
+
+        async function toggleCount(id) {
+            await manager.toggleHeadCount(id);
+            renderAdmin();
+        }
+
+        async function resetAll() {
+            if (confirm("Are you sure? This will reset all progress for all users.")) {
+                await manager.resetData();
+                renderAdmin();
+            }
+        }
+
+        // Init
+        renderAdmin();
+        
+        // Setup Realtime (Auto-Refresh)
+        if (typeof supabase !== 'undefined') {
+            supabase
+                .channel('admin-db-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_events' }, payload => {
+                    console.log('Change received!', payload);
+                    renderAdmin();
+                })
+                .subscribe();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manali 2026 - Live Trip Status</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #ff0099;
+            --accent: #ffcc00;
+            --dark: #111;
+            --glass: rgba(255, 255, 255, 0.1);
+            --completed: #00ff88;
+            --pending: #444;
+            --active: #00d2ff;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .refresh-note {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        /* Timeline Styles */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            border-left: 2px solid #333;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            background: var(--glass);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            /* Default dimmed for pending */
+        }
+
+        /* Status Indicators */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -39px;
+            /* Adjust based on padding/border */
+            top: 20px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--pending);
+            border: 2px solid var(--dark);
+            box-shadow: 0 0 0 2px var(--pending);
+            transition: all 0.3s ease;
+        }
+
+        /* Completed State */
+        .timeline-item.completed {
+            opacity: 1;
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .timeline-item.completed::before {
+            background: var(--completed);
+            box-shadow: 0 0 10px var(--completed);
+        }
+
+        .timeline-item.completed h3 {
+            color: var(--completed);
+        }
+
+        /* Active State */
+        .timeline-item.active {
+            opacity: 1;
+            background: rgba(0, 210, 255, 0.15);
+            border-color: var(--active);
+            transform: scale(1.02);
+        }
+
+        .timeline-item.active::before {
+            background: var(--active);
+            box-shadow: 0 0 15px var(--active);
+            animation: pulse 1.5s infinite;
+        }
+
+        .timeline-item.active h3 {
+            color: var(--active);
+        }
+
+        /* Warning State for Missing Students */
+        .timeline-item.warning {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+        }
+
+        .timeline-item.warning h3 {
+            color: #ff4444;
+        }
+
+        .timeline-item.warning::before {
+            background: #ff4444;
+            box-shadow: 0 0 15px #ff4444;
+            animation: pulse-red 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 210, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 210, 255, 0);
+            }
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+            }
+        }
+
+        /* Content */
+        .time-badge {
+            display: inline-block;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: #2a2a2a;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+            border: 1px solid #444;
+        }
+
+        .count-badge.checked {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+            font-weight: bold;
+        }
+
+        h3 {
+            margin: 5px 0;
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin: 5px 0 0;
+            color: #ddd;
+            line-height: 1.5;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .network-warning {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 204, 0, 0.1);
+            border-left: 3px solid var(--accent);
+            font-size: 0.9rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            margin-top: 50px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-top: 2px solid var(--primary);
+            border-radius: 12px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .contact-card {
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .contact-card h4 {
+            margin: 0 0 5px 0;
+            color: var(--primary);
+        }
+
+        .role {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phone {
+            color: #fff;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .phone:hover {
+            color: var(--accent);
+        }
+
+        .back-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Live Trip Updates 🛰️</h1>
+        <p class="refresh-note">Updates automatically. Last check: <span id="last-check">Just now</span></p>
+
+        <div id="timeline-container" class="timeline">
+            <!-- Timeline items will be injected here -->
+            <div style="text-align:center; padding: 20px;">Loading updates...</div>
+        </div>
+
+        <!-- Emergency Contacts -->
+        <div class="contact-section">
+            <h2 style="text-align:center; margin-top:0;">🆘 Emergency Contacts</h2>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <h4>Dhanish</h4>
+                    <div class="role">Content Creator</div>
+                    <a href="tel:8129163766" class="phone">📞 8129163766</a>
+                </div>
+                <div class="contact-card">
+                    <h4>Faiz</h4>
+                    <div class="role">Guide</div>
+                    <a href="tel:7902663277" class="phone">📞 7902663277</a>
+                </div>
+                <div class="contact-card">
+                    <h4>Nomadller</h4>
+                    <div class="role">Coordinator</div>
+                    <a href="tel:6238998382" class="phone">📞 6238998382</a>
+                </div>
+                <div class="contact-card">
+                    <h4>Mumtaz</h4>
+                    <div class="role">Lady Guide</div>
+                    <a href="tel:8137877506" class="phone">📞 8137877506</a>
+                </div>
+            </div>
+        </div>
+
+        <a href="index.html" class="back-btn">← Back to Presentation</a>
+    </div>
+
+    <script src="trip_logic.js"></script>
+    <script>
+        const manager = window.tripManager;
+        const container = document.getElementById('timeline-container');
+        const lastCheckLabel = document.getElementById('last-check');
+
+        async function renderTimeline() {
+            const events = await manager.fetchEvents();
+
+            if (events.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:20px;">Waiting for trip data...</div>';
+                return;
+            }
+
+            container.innerHTML = ''; // Clear loading
+
+            events.forEach((event, index) => {
+                const item = document.createElement('div');
+                // Determine class based on status
+                let statusClass = 'pending';
+                if (event.status === 'active') statusClass = 'active';
+                if (event.status === 'completed') statusClass = 'completed';
+                if (event.warning && event.status === 'active') statusClass = 'warning';
+
+                item.className = `timeline-item ${statusClass}`;
+
+                // Count Badge Logic (using snake_case)
+                let countBadge = '';
+                if (event.count_check) {
+                    if (event.head_count_verified) {
+                        countBadge = `<span class="count-badge checked">✓ Head Count Verified</span>`;
+                    } else if (event.status === 'active' || event.status === 'completed') {
+                        countBadge = `<span class="count-badge" style="background:#ff9900; color:black;">⚠ Count Pending</span>`;
+                    } else if (event.warning) {
+                        countBadge = `<span class="count-badge" style="background:#ff4444; color:white;">⚠ Students Missing</span>`;
+                    }
+                }
+
+                item.innerHTML = `
+                    <div class="time">${event.time || 'TBD'}</div>
+                    <div class="content">
+                        <h3>${event.icon} ${event.title} ${countBadge}</h3>
+                        <p>${event.description}</p>
+                    </div>
+                `;
+
+                container.appendChild(item);
+            });
+
+            lastCheckLabel.innerText = new Date().toLocaleTimeString();
+        }
+
+        // Initial Load
+        renderTimeline();
+
+        // Auto-refresh via Realtime
+        if (typeof supabase !== 'undefined') {
+            supabase
+                .channel('public-db-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'trip_events' }, payload => {
+                    renderTimeline();
+                })
+                .subscribe();
+        }
+    </script>
+</body>
+
+</html>

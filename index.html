@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manali 2026: Explore the Unexplored</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="presentation-container">
+
+        <!-- Slide 1: Title -->
+        <section class="slide" id="slide1">
+            <div class="bg-layer" style="background-image: url('assets/slide1.png');"></div>
+            <div class="content-overlay centered">
+                <h1 class="glitch" data-text="MANALI 2026">MANALI 2026</h1>
+                <h2 class="sub-glitch">Explore the Unexplored</h2>
+                <p class="subtitle">An 8-Day College Expedition from Thrissur</p>
+                <div class="scroll-indicator">↓</div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Route (Dynamic Tech Map) -->
+        <section class="slide" id="slide2">
+            <div class="bg-layer" style="background-image: url('assets/tech_map_video.png');"></div>
+            <div class="content-overlay glass-panel">
+                <h2>The Grand Route</h2>
+                <div class="route-container">
+                    <svg class="map-overlay" viewBox="0 0 500 600" preserveAspectRatio="xMidYMid meet">
+                        <!-- Definitions for Gradients and Markers -->
+                        <defs>
+                            <linearGradient id="routeGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#00d2ff;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#ff0099;stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- Static Route Background (The Track) -->
+                        <path class="route-path-bg" d="M 180 550 L 260 200 L 265 80 L 260 200 L 150 380 L 180 550" />
+
+                        <!-- Segment 1: Thrissur -> Delhi -->
+                        <path id="path-leg1" fill="none" class="hidden-path" d="M 180 550 L 260 200" />
+                        <!-- Segment 2: Delhi -> Manali -->
+                        <path id="path-leg2" fill="none" class="hidden-path" d="M 260 200 L 265 80" />
+                        <!-- Segment 3: Manali -> Delhi -->
+                        <path id="path-leg3" fill="none" class="hidden-path" d="M 265 80 L 260 200" />
+                        <!-- Segment 4: Delhi -> Mumbai -->
+                        <path id="path-leg4" fill="none" class="hidden-path" d="M 260 200 L 150 380" />
+                        <!-- Segment 5: Mumbai -> Thrissur -->
+                        <path id="path-leg5" fill="none" class="hidden-path" d="M 150 380 L 180 550" />
+
+                        <!-- Moving Vehicle Group -->
+                        <g id="vehicle-group" filter="url(#glow)">
+                            <!-- Train Icon -->
+                            <g id="train-icon" display="none">
+                                <text x="-15" y="10" font-size="24">🚆</text>
+                            </g>
+                            <!-- Bus Icon -->
+                            <g id="bus-icon" display="none">
+                                <text x="-15" y="10" font-size="24">🚌</text>
+                            </g>
+                        </g>
+
+                        <!-- Cities -->
+                        <g class="city-marker">
+                            <circle cx="180" cy="550" r="6" fill="#00d2ff" />
+                            <text x="195" y="555" fill="#fff" font-size="14" font-weight="bold">Thrissur</text>
+                        </g>
+                        <g class="city-marker">
+                            <circle cx="260" cy="200" r="6" fill="#fff" />
+                            <text x="275" y="205" fill="#fff" font-size="14" font-weight="bold">Delhi</text>
+                        </g>
+                        <g class="city-marker">
+                            <circle cx="265" cy="80" r="6" fill="#ffcc00" />
+                            <text x="280" y="85" fill="#fff" font-size="14" font-weight="bold">Manali</text>
+                        </g>
+                        <g class="city-marker">
+                            <circle cx="150" cy="380" r="6" fill="#ff0099" />
+                            <text x="100" y="385" fill="#fff" font-size="14" font-weight="bold">Mumbai</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="route-stats">
+                    <div class="stat-box">
+                        <span class="neon-text">5,400 KM</span>
+                        <span class="label">Total Round Trip</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Day 1-2 (Moving Landscape) -->
+        <section class="slide" id="slide3">
+            <!-- Marquee Background for Train Motion -->
+            <div class="marquee-container">
+                <div class="marquee-content">
+                    <img src="assets/moving_landscape.png" alt="Landscape">
+                    <img src="assets/moving_landscape.png" alt="Landscape">
+                </div>
+            </div>
+            <div class="content-overlay left-aligned">
+                <div class="day-badge">Feb 7-8 (Day 1-2)</div>
+                <h2>The Journey Begins</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="icon">🚆</span>
+                        <p>Thrissur &rarr; Delhi</p>
+                        <small>Sleeper Class Ticket Included</small>
+                    </div>
+                    <div class="info-item">
+                        <span class="icon">🕑</span>
+                        <p>05:00 AM Assembly @ Thrissur</p>
+                        <small>06:00 AM Train Departure</small>
+                    </div>
+                    <div class="info-item">
+                        <span class="icon">🚌</span>
+                        <p>Delhi Arrival &rarr; Volvo to Manali</p>
+                    </div>
+                </div>
+                <p class="highlight-text">Full day train journey. Meals not provided on train.</p>
+            </div>
+        </section>
+
+        <!-- Slide 4: Day 3 -->
+        <section class="slide" id="slide4">
+            <div class="bg-layer" style="background-image: url('assets/slide4.png');"></div>
+            <div class="content-overlay right-aligned">
+                <div class="day-badge">Day 3</div>
+                <h2>Manali Arrival & Sightseeing</h2>
+                <div class="temp-display">Check-in Hotel -> Lunch</div>
+                <ul class="itinerary-list">
+                    <li>Hadimba Temple</li>
+                    <li>Van Vihar</li>
+                    <li>Club House</li>
+                    <li>Mall Road Visit</li>
+                </ul>
+                <p class="small-note">Dinner & Overnight Stay</p>
+            </div>
+        </section>
+
+        <!-- Slide 5: Day 4 -->
+        <section class="slide" id="slide5">
+            <div class="bg-layer" style="background-image: url('assets/slide5.png');"></div>
+            <div class="content-overlay centered-bottom">
+                <div class="day-badge">Day 4: Snow Point Excursion</div>
+                <h2>Solang / Atal Tunnel / Gulaba</h2>
+
+                <div class="weather-alert">
+                    (Spot depends on season/opening)
+                </div>
+
+                <div class="weather-forecast-container"
+                    style="display: flex; gap: 10px; justify-content: center; margin: 15px 0;">
+                    <img src="assets/weather_forecast_1.jpg" alt="Weather Forecast 1"
+                        style="height: 150px; border-radius: 8px; border: 1px solid white;">
+                    <img src="assets/weather_forecast_2.jpg" alt="Weather Forecast 2"
+                        style="height: 150px; border-radius: 8px; border: 1px solid white;">
+                </div>
+
+                <div class="adventure-stats">
+                    <p class="highlight">❄️ Snow Adventure</p>
+                    <p class="warning-text">⚠ If delayed, simple lunch you should have from snow point (Own Expenses)
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: Day 5 -->
+        <section class="slide" id="slide6">
+            <div class="bg-layer" style="background-image: url('assets/slide6.png');"></div>
+            <div class="content-overlay glass-panel">
+                <div class="day-badge">Day 5</div>
+                <h2>Kullu & Departure</h2>
+                <div class="split-info">
+                    <div class="col">
+                        <h3>Activities</h3>
+                        <p>🌊 River Rafting <br><span class="expense-note">(Own Expenses)</span></p>
+                        <p>🛍️ Kullu Shawl Factory</p>
+                    </div>
+                    <div class="col">
+                        <h3>Departure</h3>
+                        <p>Return to hotel for Lunch</p>
+                        <p>Volvo to Delhi (Evening)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Day 6 (Updated Itinerary & Img) -->
+        <section class="slide" id="slide7">
+            <div class="bg-layer" style="background-image: url('assets/humayuns_tomb.png');"></div>
+            <div class="content-overlay glass-panel">
+                <div class="day-badge">Day 6</div>
+                <h2>Delhi Sightseeing & Departure</h2>
+                <div class="split-info">
+                    <div class="col">
+                        <h3>Sightseeing</h3>
+                        <ul class="itinerary-list">
+                            <li>Humayun's Tomb</li>
+                            <li>Qutub Minar</li>
+                            <li>Lotus Temple <br><span class="small-note">(If time permits)</span></li>
+                        </ul>
+                    </div>
+                    <div class="col">
+                        <h3>Mumbai Connection</h3>
+                        <p>Evening 04:30 PM &rarr; Station Drop</p>
+                        <p>Board Train to Mumbai Bandra Terminus</p>
+                        <p class="small-note">Overnight Journey</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Day 7 -->
+        <section class="slide" id="slide8">
+            <!-- Marquee Background -->
+            <div class="marquee-container">
+                <div class="marquee-content">
+                    <img src="assets/sleeper_interior.png" alt="Train Interior">
+                    <img src="assets/mumbai_crowd.png" alt="Mumbai Crowd">
+                    <img src="assets/train_window.png" alt="Window View">
+                    <img src="assets/kerala_train.png" alt="Kerala Scenic">
+                    <!-- Duplicate for smooth loop -->
+                    <img src="assets/sleeper_interior.png" alt="Train Interior">
+                    <img src="assets/mumbai_crowd.png" alt="Mumbai Crowd">
+                    <img src="assets/train_window.png" alt="Window View">
+                </div>
+            </div>
+
+            <div class="content-overlay glass-panel">
+                <div class="day-badge">Day 7</div>
+                <h2>Mumbai Transfer</h2>
+                <div class="info-grid centered-grid">
+                    <div class="info-item">
+                        <span class="icon">🚉</span>
+                        <p>Reach Bandra Terminus</p>
+                    </div>
+                    <div class="info-item">
+                        <span class="icon">⇄</span>
+                        <p>Transfer to LTT (Lokmanya Tilak Terminus)</p>
+                    </div>
+                    <div class="info-item">
+                        <span class="icon">🚆</span>
+                        <p>Board Netravati Express</p>
+                        <small>Sleeper Class (Non-Luxury)</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: Day 8 -->
+        <section class="slide" id="slide9">
+            <div class="bg-layer" style="background-image: url('assets/slide8.png');"></div>
+            <div class="content-overlay centered">
+                <div class="day-badge">Day 8</div>
+                <h2>Homecoming</h2>
+
+                <div class="loading-container">
+                    <div class="loading-bar"></div>
+                    <div class="loading-text">Reaching Kerala...</div>
+                </div>
+
+                <div class="final-arrival">
+                    <p class="highlight-text">Arrival in Kerala</p>
+                    <p class="small-note">Trip Ends with Beautiful Memories ❤</p>
+
+                    <a href="weather.html" class="weather-btn">
+                        Check Live Weather Updates ⛈️
+                    </a>
+
+                    <!-- Live Trip Status Button -->
+                    <a href="timeline.html" class="live-status-btn">
+                        Live Trip Status 📍
+                    </a>
+                </div>
+
+                <h1 class="grand-finale">Memories > Miles</h1>
+            </div>
+        </section>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
